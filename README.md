@@ -6,6 +6,7 @@ This bundle provides the RollerworksDBBundle.
 ### UserErrorExceptionListener
 
 This listener listens to pre-configured DB(AL) related Exceptions and looks for an so-called user-error.
+
 ***Currently only PostgreSQL is supported.***
 
 An user-error is an exception/error thrown by an DB used-defined function,
