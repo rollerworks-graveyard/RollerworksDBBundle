@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of the RollerworksDBBundle.
  *
@@ -75,8 +76,7 @@ class UserErrorExceptionListener
 	 */
 	public function __construct(TranslatorInterface $poTranslator, $psErrorPrefix = 'app-exception: ', $paInExceptions = array('PDOException', 'Doctrine\DBAL\Driver\OCI8\OCI8Exception'))
 	{
-		if (!is_array($paInExceptions))
-		{
+		if (! is_array($paInExceptions)) {
 			throw (new \InvalidArgumentException('$paInExceptions must be an array'));
 		}
 
@@ -94,8 +94,7 @@ class UserErrorExceptionListener
 	 */
 	public function onKernelException(GetResponseForExceptionEvent $poEvent)
 	{
-		if (! in_array(get_class($poEvent->getException()), $this->_aInExceptions))
-		{
+		if (! in_array(get_class($poEvent->getException()), $this->_aInExceptions)) {
 			return;
 		}
 
@@ -107,34 +106,28 @@ class UserErrorExceptionListener
 
 		// HT000 is used for MySQL, but there is no support for 'custom errors' yet
 
-		if ($poEvent->getException() instanceof \PDOException)
-		{
-			if (! in_array($poEvent->getException()->getCode(), array('P0001' /*, 'HT000'*/)))
-			{
+		if ($poEvent->getException() instanceof \PDOException) {
+			if (! in_array($poEvent->getException()->getCode(), array('P0001' /*, 'HT000'*/))) {
 				return;
 			}
 
 			// PostgreSQL
-			if ($poEvent->getException()->getCode() === 'P0001' && preg_match('#^SQLSTATE\[P0001\]: Raise exception: \d+ ERROR:  (.+)#', $sExceptionMsg, $aMessage))
-			{
+			if ('P0001' === $poEvent->getException()->getCode() && preg_match('#^SQLSTATE\[P0001\]: Raise exception: \d+ ERROR:  (.+)#', $sExceptionMsg, $aMessage)) {
 				$sExceptionMsg = $aMessage[ 1 ];
 			}
 			// MySQL
-			/*if ( $poEvent->getException()->getCode() === 'HT000' )
-			{
+			/*if ($poEvent->getException()->getCode() === 'HT000') {
 				$sExceptionMsg = $aMessage[1];
 			}
 			*/
 			// @codeCoverageIgnoreStart
-			else
-			{
+			else {
 				return;
 			}
 			// @codeCoverageIgnoreEnd
 		}
 
-		if (mb_substr($sExceptionMsg, 0, $iPrefixLength) === $this->_sErrorPrefix)
-		{
+		if ($this->_sErrorPrefix === mb_substr($sExceptionMsg, 0, $iPrefixLength)) {
 			$sExceptionMsg = mb_substr($sExceptionMsg, $iPrefixLength);
 			$aMessage      = $this->_parseMessage($sExceptionMsg);
 
@@ -182,20 +175,16 @@ class UserErrorExceptionListener
 		* )*
 		* )?$
 		*/
-		if (preg_match('#^\s*("(?:[^"]+|"")+"|[^|]+)((?:\s*\|\s*(?:[a-z_][a-z0-9_]*):(?:"(?:(?:[^"]+|"")+)"|(?:[^|]+)))*)?$#i', $psMessage, $aErrInformation))
-		{
-			if (! empty($aErrInformation[ 2 ]) && mb_strpos($aErrInformation[ 2 ], '|') !== false)
-			{
+		if (preg_match('#^\s*("(?:[^"]+|"")+"|[^|]+)((?:\s*\|\s*(?:[a-z_][a-z0-9_]*):(?:"(?:(?:[^"]+|"")+)"|(?:[^|]+)))*)?$#i', $psMessage, $aErrInformation)) {
+			if (!empty($aErrInformation[ 2 ]) && false !== mb_strpos($aErrInformation[ 2 ], '|')) {
 				preg_match_all('/(?:\s*\|\s*([a-z_][a-z0-9_]*):("(?:(?:[^"]+|"")+)"|(?:[^|]+))\s*)/i', $aErrInformation[ 2 ], $aParams, PREG_SET_ORDER);
 
-				for ($iParam = 0; $iParam < count($aParams); $iParam ++)
-				{
+				for ($iParam = 0; $iParam < count($aParams); $iParam ++) {
 					$aParams[ $iParam ][ 2 ] = rtrim($aParams[ $iParam ][ 2 ]);
 
 					// Check for quotes, trim and normalize them
-					if (mb_substr($aParams[ $iParam ][ 2 ], 0, 1) === '"')
-					{
-						$aParams[ $iParam ][ 2 ] = mb_substr($aParams[ $iParam ][ 2 ], 1, - 1);
+					if ('"' === mb_substr($aParams[ $iParam ][ 2 ], 0, 1)) {
+						$aParams[ $iParam ][ 2 ] = mb_substr($aParams[ $iParam ][ 2 ], 1, -1);
 						$aParams[ $iParam ][ 2 ] = str_replace('""', '"', $aParams[ $iParam ][ 2 ]);
 					}
 
@@ -206,17 +195,15 @@ class UserErrorExceptionListener
 			$aErrInformation[ 1 ] = trim($aErrInformation[ 1 ]);
 
 			// Check for quotes, trim and normalize them
-			if (mb_substr($aErrInformation[ 1 ], 0, 1) === '"')
-			{
-				$aErrInformation[ 1 ] = mb_substr($aErrInformation[ 1 ], 1, - 1);
+			if ('"' === mb_substr($aErrInformation[ 1 ], 0, 1)) {
+				$aErrInformation[ 1 ] = mb_substr($aErrInformation[ 1 ], 1, -1);
 				$aErrInformation[ 1 ] = str_replace('""', '"', $aErrInformation[ 1 ]);
 			}
 
-			return array('message' => $aErrInformation[ 1 ], 'params'  => $aParsedParams);
+			return array('message' => $aErrInformation[ 1 ], 'params' => $aParsedParams);
 		}
-		else
-		{
-			return array('message' => $psMessage, 'params'  => array());
+		else {
+			return array('message' => $psMessage, 'params' => array());
 		}
 	}
 }

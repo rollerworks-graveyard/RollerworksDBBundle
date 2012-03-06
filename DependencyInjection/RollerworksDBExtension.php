@@ -1,5 +1,17 @@
 <?php
 
+/**
+ * This file is part of the RollerworksDBBundle.
+ *
+ * (c) Rollerscapes
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ *
+ * @link    http://projects.rollerscapes.net/RollerFramework
+ * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
+ */
+
 namespace Rollerworks\DBBundle\DependencyInjection;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -26,7 +38,7 @@ class RollerworksDBExtension extends Extension
 		$loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
 		$loader->load('config.xml');
 
-		$container->setParameter('rollerworks_db.exception_listener.check_prefix',   $config[ 'user_exception_listener' ][ 'check_prefix' ]);
+		$container->setParameter('rollerworks_db.exception_listener.check_prefix', $config[ 'user_exception_listener' ][ 'check_prefix' ]);
 		$container->setParameter('rollerworks_db.exception_listener.check_class_in', $config[ 'user_exception_listener' ][ 'check_class_in' ]);
 	}
 }

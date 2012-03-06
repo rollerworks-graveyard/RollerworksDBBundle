@@ -1,4 +1,17 @@
 <?php
+
+/**
+ * This file is part of the RollerworksDBBundle.
+ *
+ * (c) Rollerscapes
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ *
+ * @link    http://projects.rollerscapes.net/RollerFramework
+ * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
+ */
+
 namespace Rollerworks\DBBundle\Tests;
 
 use Symfony\Component\HttpKernel\HttpKernelInterface;
@@ -70,8 +83,7 @@ class UserErrorExceptionTest extends \PHPUnit_Framework_TestCase
 	 */
 	protected function _messageTester($psInputMessage, $psExpectedMessage = null)
 	{
-		if (empty($psExpectedMessage))
-		{
+		if (empty($psExpectedMessage)) {
 			$psExpectedMessage = $psInputMessage;
 		}
 
