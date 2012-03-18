@@ -44,166 +44,162 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class UserErrorExceptionListener
 {
-	/**
-	 * Translator instance
-	 *
-	 * @var \Symfony\Component\Translation\TranslatorInterface
-	 */
-	protected $_oTranslator;
+    /**
+     * Translator instance
+     *
+     * @var \Symfony\Component\Translation\TranslatorInterface
+     */
+    protected $translator;
 
-	/**
-	 * Exception must be one of the following.
-	 *
-	 * @var array
-	 */
-	protected $_aInExceptions = array();
+    /**
+     * Exception must be one of the following.
+     *
+     * @var array
+     */
+    protected $checkExceptions = array();
 
-	/**
-	 * Prefix to use for checking user-exception
-	 *
-	 * @var string
-	 */
-	protected $_sErrorPrefix;
+    /**
+     * Prefix to use for checking user-exception
+     *
+     * @var string
+     */
+    protected $errorPrefix;
 
-	/**
-	 * Constructing
-	 *
-	 * @param \Symfony\Component\Translation\TranslatorInterface $poTranslator
-	 * @param string                                             $psErrorPrefix   Prefix to use for checking user-exception
-	 * @param array                                              $paInExceptions  Exceptions to listen to
-	 *
-	 * @api
-	 */
-	public function __construct(TranslatorInterface $poTranslator, $psErrorPrefix = 'app-exception: ', $paInExceptions = array('PDOException', 'Doctrine\DBAL\Driver\OCI8\OCI8Exception'))
-	{
-		if (! is_array($paInExceptions)) {
-			throw (new \InvalidArgumentException('$paInExceptions must be an array'));
-		}
+    /**
+     * Constructing
+     *
+     * @param \Symfony\Component\Translation\TranslatorInterface $translator
+     * @param string                                             $errorPrefix      Prefix to use for checking user-exception
+     * @param array                                              $checkExceptions  Exceptions to listen to
+     *
+     * @api
+     */
+    public function __construct(TranslatorInterface $translator, $errorPrefix = 'app-exception: ', array $checkExceptions = array('PDOException', 'Doctrine\DBAL\Driver\OCI8\OCI8Exception'))
+    {
+        $this->errorPrefix     = $errorPrefix;
+        $this->translator      = $translator;
+        $this->checkExceptions = $checkExceptions;
+    }
 
-		$this->_sErrorPrefix  = $psErrorPrefix;
-		$this->_oTranslator   = $poTranslator;
-		$this->_aInExceptions = $paInExceptions;
-	}
+    /**
+     * Register the event handler
+     *
+     * @param \Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent $event
+     *
+     * @api
+     */
+    public function onKernelException(GetResponseForExceptionEvent $event)
+    {
+        if (!in_array(get_class($event->getException()), $this->checkExceptions)) {
+            return;
+        }
 
-	/**
-	 * Register the event handler
-	 *
-	 * @param \Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent $poEvent
-	 *
-	 * @api
-	 */
-	public function onKernelException(GetResponseForExceptionEvent $poEvent)
-	{
-		if (! in_array(get_class($poEvent->getException()), $this->_aInExceptions)) {
-			return;
-		}
+        $exceptionMessesage = $event->getException()->getMessage();
+        $prefixLength       = mb_strlen($this->errorPrefix);
 
-		$sExceptionMsg = $poEvent->getException()->getMessage();
-		$iPrefixLength = mb_strlen($this->_sErrorPrefix);
+        // PDO Exception likes to place SQLState before the message
+        // And do some other stuff...
 
-		// PDO Exception likes to place SQLState before the message
-		// And do some other stuff...
+        // HT000 is used for MySQL, but there is no support for 'custom errors' yet
 
-		// HT000 is used for MySQL, but there is no support for 'custom errors' yet
+        if ($event->getException() instanceof \PDOException) {
+            if (!in_array($event->getException()->getCode(), array('P0001' /*, 'HT000'*/))) {
+                return;
+            }
 
-		if ($poEvent->getException() instanceof \PDOException) {
-			if (! in_array($poEvent->getException()->getCode(), array('P0001' /*, 'HT000'*/))) {
-				return;
-			}
+            // PostgreSQL
+            if ('P0001' === $event->getException()->getCode() && preg_match('#^SQLSTATE\[P0001\]: Raise exception: \d+ ERROR:  (.+)#', $exceptionMessesage, $messageMatch)) {
+                $exceptionMessesage = $messageMatch[1];
+            }
+            // MySQL
+            /*if ($event->getException()->getCode() === 'HT000') {
+                $sExceptionMsg = $aMessage[1];
+            }
+            */
+            // @codeCoverageIgnoreStart
+            else {
+                return;
+            }
+            // @codeCoverageIgnoreEnd
+        }
 
-			// PostgreSQL
-			if ('P0001' === $poEvent->getException()->getCode() && preg_match('#^SQLSTATE\[P0001\]: Raise exception: \d+ ERROR:  (.+)#', $sExceptionMsg, $aMessage)) {
-				$sExceptionMsg = $aMessage[ 1 ];
-			}
-			// MySQL
-			/*if ($poEvent->getException()->getCode() === 'HT000') {
-				$sExceptionMsg = $aMessage[1];
-			}
-			*/
-			// @codeCoverageIgnoreStart
-			else {
-				return;
-			}
-			// @codeCoverageIgnoreEnd
-		}
+        if (mb_substr($exceptionMessesage, 0, $prefixLength) === $this->errorPrefix) {
+            $exceptionMessesage = mb_substr($exceptionMessesage, $prefixLength);
+            $messageMatch       = $this->_parseMessage($exceptionMessesage);
 
-		if ($this->_sErrorPrefix === mb_substr($sExceptionMsg, 0, $iPrefixLength)) {
-			$sExceptionMsg = mb_substr($sExceptionMsg, $iPrefixLength);
-			$aMessage      = $this->_parseMessage($sExceptionMsg);
+            $event->setException(new \Exception($this->translator->trans($messageMatch['message'], $messageMatch['params']), 0, $event->getException()));
+        }
+    }
 
-			$poEvent->setException(new \Exception($this->_oTranslator->trans($aMessage[ 'message' ], $aMessage[ 'params' ]), 0, $poEvent->getException()));
-		}
-	}
+    /**
+     * Parse the user-error message and return the message and parameters.
+     *
+     * @param string $inputMessage
+     * @return Array with 'message' containing the actual message and 'params' containing the parameters
+     */
+    protected function _parseMessage($inputMessage)
+    {
+        $parsedParams = array();
 
-	/**
-	 * Parse the user-error message and return the message and parameters.
-	 *
-	 * @param string $psMessage
-	 * @return Array with 'message' containing the actual message and 'params' containing the parameters
-	 */
-	protected function _parseMessage($psMessage)
-	{
-		$aParsedParams = array();
+        /*
+        * ^\s*
+        *
+        * # Message/keyword
+        * ("(?:[^"]+|"")+"|[^|]+)
+        *
+        *
+        * # Catch all the parameters
+        * (
+        * (?:
+        *
+        * # Parameter delimiter
+        * \s*\|\s*
+        *
+        * # Parameter name (optional)
+        * (?:[a-z_][a-z0-9_]*):
+        *
+        * # Value (match is performed multiple times. The regex is grouped and executed multiple times)
+        * (?:
+        *
+        * 	# Match quoted value
+        * 	"(?:(?:[^"]+|"")+)"
+        * |
+        * 	# Match none-quoted value
+        * 	(?:[^|]+)
+        * )
+        *
+        * )*
+        * )?$
+        */
+        if (preg_match('#^\s*("(?:[^"]+|"")+"|[^|]+)((?:\s*\|\s*(?:[a-z_][a-z0-9_]*):(?:"(?:(?:[^"]+|"")+)"|(?:[^|]+)))*)?$#i', $inputMessage, $errorMatch)) {
+            if (!empty($errorMatch[2]) && false !== mb_strpos($errorMatch[2], '|')) {
+                preg_match_all('/(?:\s*\|\s*([a-z_][a-z0-9_]*):("(?:(?:[^"]+|"")+)"|(?:[^|]+))\s*)/i', $errorMatch[2], $matchedParams, PREG_SET_ORDER);
 
-		/*
-		* ^\s*
-		*
-		* # Message/keyword
-		* ("(?:[^"]+|"")+"|[^|]+)
-		*
-		*
-		* # Catch all the parameters
-		* (
-		* (?:
-		*
-		* # Parameter delimiter
-		* \s*\|\s*
-		*
-		* # Parameter name (optional)
-		* (?:[a-z_][a-z0-9_]*):
-		*
-		* # Value (match is performed multiple times. The regex is grouped and executed multiple times)
-		* (?:
-		*
-		* 	# Match quoted value
-		* 	"(?:(?:[^"]+|"")+)"
-		* |
-		* 	# Match none-quoted value
-		* 	(?:[^|]+)
-		* )
-		*
-		* )*
-		* )?$
-		*/
-		if (preg_match('#^\s*("(?:[^"]+|"")+"|[^|]+)((?:\s*\|\s*(?:[a-z_][a-z0-9_]*):(?:"(?:(?:[^"]+|"")+)"|(?:[^|]+)))*)?$#i', $psMessage, $aErrInformation)) {
-			if (!empty($aErrInformation[ 2 ]) && false !== mb_strpos($aErrInformation[ 2 ], '|')) {
-				preg_match_all('/(?:\s*\|\s*([a-z_][a-z0-9_]*):("(?:(?:[^"]+|"")+)"|(?:[^|]+))\s*)/i', $aErrInformation[ 2 ], $aParams, PREG_SET_ORDER);
+                for ($paramIndex = 0; $paramIndex < count($matchedParams); $paramIndex++) {
+                    $matchedParams[$paramIndex][2] = rtrim($matchedParams[$paramIndex][2]);
 
-				for ($iParam = 0; $iParam < count($aParams); $iParam ++) {
-					$aParams[ $iParam ][ 2 ] = rtrim($aParams[ $iParam ][ 2 ]);
+                    // Check for quotes, trim and normalize them
+                    if ('"' === mb_substr($matchedParams[$paramIndex][2], 0, 1)) {
+                        $matchedParams[$paramIndex][2] = mb_substr($matchedParams[$paramIndex][2], 1, -1);
+                        $matchedParams[$paramIndex][2] = str_replace('""', '"', $matchedParams[$paramIndex][2]);
+                    }
 
-					// Check for quotes, trim and normalize them
-					if ('"' === mb_substr($aParams[ $iParam ][ 2 ], 0, 1)) {
-						$aParams[ $iParam ][ 2 ] = mb_substr($aParams[ $iParam ][ 2 ], 1, -1);
-						$aParams[ $iParam ][ 2 ] = str_replace('""', '"', $aParams[ $iParam ][ 2 ]);
-					}
+                    $parsedParams['%' . $matchedParams[$paramIndex][1] . '%'] = $matchedParams[$paramIndex][2];
+                }
+            }
 
-					$aParsedParams[ '%' . $aParams[ $iParam ][ 1 ] . '%' ] = $aParams[ $iParam ][ 2 ];
-				}
-			}
+            $errorMatch[1] = trim($errorMatch[1]);
 
-			$aErrInformation[ 1 ] = trim($aErrInformation[ 1 ]);
+            // Check for quotes, trim and normalize them
+            if ('"' === mb_substr($errorMatch[1], 0, 1)) {
+                $errorMatch[1] = mb_substr($errorMatch[1], 1, -1);
+                $errorMatch[1] = str_replace('""', '"', $errorMatch[1]);
+            }
 
-			// Check for quotes, trim and normalize them
-			if ('"' === mb_substr($aErrInformation[ 1 ], 0, 1)) {
-				$aErrInformation[ 1 ] = mb_substr($aErrInformation[ 1 ], 1, -1);
-				$aErrInformation[ 1 ] = str_replace('""', '"', $aErrInformation[ 1 ]);
-			}
-
-			return array('message' => $aErrInformation[ 1 ], 'params' => $aParsedParams);
-		}
-		else {
-			return array('message' => $psMessage, 'params' => array());
-		}
-	}
+            return array('message' => $errorMatch[1], 'params' => $parsedParams);
+        }
+        else {
+            return array('message' => $inputMessage, 'params' => array());
+        }
+    }
 }

@@ -27,19 +27,19 @@ use Symfony\Component\Config\FileLocator;
  */
 class RollerworksDBExtension extends Extension
 {
-	/**
-	 * {@inheritDoc}
-	 */
-	public function load(array $configs, ContainerBuilder $container)
-	{
-		$configuration = new Configuration();
-		$config        = $this->processConfiguration($configuration, $configs);
+    /**
+     * {@inheritDoc}
+     */
+    public function load(array $configs, ContainerBuilder $container)
+    {
+        $configuration = new Configuration();
+        $config        = $this->processConfiguration($configuration, $configs);
 
-		$loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
-		$loader->load('config.xml');
+        $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
+        $loader->load('config.xml');
 
-		$container->setParameter('rollerworks_db.exception_listener.check_prefix', $config[ 'user_exception_listener' ][ 'check_prefix' ]);
-		$container->setParameter('rollerworks_db.exception_listener.check_class_in', $config[ 'user_exception_listener' ][ 'check_class_in' ]);
-	}
+        $container->setParameter('rollerworks_db.exception_listener.check_prefix', $config[ 'user_exception_listener' ][ 'check_prefix' ]);
+        $container->setParameter('rollerworks_db.exception_listener.check_class_in', $config[ 'user_exception_listener' ][ 'check_class_in' ]);
+    }
 }
 
