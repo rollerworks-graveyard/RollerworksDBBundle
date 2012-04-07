@@ -25,34 +25,33 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
  */
 class Configuration implements ConfigurationInterface
 {
-	/**
-	 * {@inheritDoc}
-	 */
-	public function getConfigTreeBuilder()
-	{
-		$treeBuilder = new TreeBuilder();
-		$rootNode    = $treeBuilder->root('rollerworks_db');
+    /**
+     * {@inheritDoc}
+     */
+    public function getConfigTreeBuilder()
+    {
+        $treeBuilder = new TreeBuilder();
+        $rootNode    = $treeBuilder->root('rollerworks_db');
 
-		$rootNode
-			->children()
-				->arrayNode('user_exception_listener')
-					->addDefaultsIfNotSet()
-					->fixXmlConfig('check_class_in')
-					->children()
+        $rootNode
+            ->children()
+                ->arrayNode('user_exception_listener')
+                    ->addDefaultsIfNotSet()
+                    ->fixXmlConfig('check_class_in')
+                    ->children()
 
-						->arrayNode('check_class_in')
-							->addDefaultsIfNotSet()
-							->defaultValue(array('PDOException', 'Doctrine\DBAL\Driver\OCI8\OCI8Exception'))
-							->prototype('scalar')->end()
-						->end()
+                        ->arrayNode('check_class_in')
+                            ->addDefaultsIfNotSet()
+                            ->defaultValue(array('PDOException', 'Doctrine\DBAL\Driver\OCI8\OCI8Exception'))
+                            ->prototype('scalar')->end()
+                        ->end()
 
-						->scalarNode('check_prefix')->defaultValue('app-exception: ')->end()
-					->end()
-				->end()
-			->end()
-		->end() ;
+                        ->scalarNode('check_prefix')->defaultValue('app-exception: ')->end()
+                    ->end()
+                ->end()
+            ->end()
+        ->end() ;
 
-		return $treeBuilder;
-	}
+        return $treeBuilder;
+    }
 }
-

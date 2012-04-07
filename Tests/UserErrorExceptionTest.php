@@ -14,19 +14,18 @@
 
 namespace Rollerworks\DBBundle\Tests;
 
+use Rollerworks\DBBundle\EventListener\UserErrorExceptionListener;
+
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpKernel\EventListener\ExceptionListener;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Tests\Component\HttpKernel\Logger;
-
-use Rollerworks\DBBundle\EventListener\UserErrorExceptionListener;
-use Doctrine\DBAL\Connection;
-
 use Symfony\Component\Translation\Translator;
 use Symfony\Component\Translation\MessageSelector;
 use Symfony\Component\Translation\Loader\ArrayLoader;
+use Symfony\Tests\Component\HttpKernel\Logger;
+use Doctrine\DBAL\Connection;
 
 class UserErrorExceptionTest extends \PHPUnit_Framework_TestCase
 {
@@ -183,6 +182,7 @@ class TestKernelThatThrowsPDOException implements HttpKernelInterface
         $this->connection->executeQuery("SELECT public.get_message_func(" . $this->connection->getWrappedConnection()->quote($this->message, \PDO::PARAM_STR) . "::text);");
     }
 }
+
 class TestKernelThatThrowsWrongPDOException implements HttpKernelInterface
 {
     /**

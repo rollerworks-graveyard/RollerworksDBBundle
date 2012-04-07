@@ -15,11 +15,11 @@
 namespace Rollerworks\DBBundle\EventListener;
 
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
-use Symfony\Component\Translation\TranslatorInterface;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Translation\TranslatorInterface;
 
 /**
- * User-error ExceptionListener.
+ * UserErrorExceptionListener.
  *
  * An user-error is an exception/error thrown by an DB used-defined function,
  * and is intended as a 'last check', so don't use this to validate basic user-input.
