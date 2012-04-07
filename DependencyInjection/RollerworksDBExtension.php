@@ -3,13 +3,10 @@
 /**
  * This file is part of the RollerworksDBBundle.
  *
- * (c) Rollerscapes
+ * (c) Sebastiaan Stok <s.stok@rollerscapes.net>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- *
- * @link    http://projects.rollerscapes.net/RollerFramework
- * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
  */
 
 namespace Rollerworks\DBBundle\DependencyInjection;
@@ -20,9 +17,9 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\Config\FileLocator;
 
 /**
- * This is the class that loads and manages your bundle configuration
+ * DBBundle configuration.
  *
- * To learn more see {@link http://symfony.com/doc/current/cookbook/bundles/extension.html}
+ * @author Sebastiaan Stok <s.stok@rollerscapes.net>
  */
 class RollerworksDBExtension extends Extension
 {
@@ -37,7 +34,7 @@ class RollerworksDBExtension extends Extension
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('config.xml');
 
-        $container->setParameter('rollerworks_db.exception_listener.check_prefix', $config[ 'user_exception_listener' ][ 'check_prefix' ]);
-        $container->setParameter('rollerworks_db.exception_listener.check_class_in', $config[ 'user_exception_listener' ][ 'check_class_in' ]);
+        $container->setParameter('rollerworks_db.exception_listener.check_prefix', $config['user_exception_listener']['check_prefix']);
+        $container->setParameter('rollerworks_db.exception_listener.check_class_in', $config['user_exception_listener']['check_class_in']);
     }
 }
