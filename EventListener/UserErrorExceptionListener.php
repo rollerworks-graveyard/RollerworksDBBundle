@@ -51,7 +51,7 @@ class UserErrorExceptionListener
     /**
      * Exception must be one of the following.
      *
-     * @var array
+     * @var string[]
      */
     protected $checkExceptions = array();
 
@@ -65,9 +65,9 @@ class UserErrorExceptionListener
     /**
      * Constructing
      *
-     * @param \Symfony\Component\Translation\TranslatorInterface $translator
-     * @param string                                             $errorPrefix      Prefix to use for checking user-exception
-     * @param array                                              $checkExceptions  Exceptions to listen to
+     * @param TranslatorInterface $translator
+     * @param string              $errorPrefix     Prefix to use for checking user-exception
+     * @param string[]            $checkExceptions Array of exceptions to listen to
      *
      * @api
      */
@@ -81,7 +81,7 @@ class UserErrorExceptionListener
     /**
      * Register the event handler
      *
-     * @param \Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent $event
+     * @param GetResponseForExceptionEvent $event
      *
      * @api
      */
@@ -91,7 +91,7 @@ class UserErrorExceptionListener
             return;
         }
 
-        $exceptionMessesage = $event->getException()->getMessage();
+        $exceptionMessage = $event->getException()->getMessage();
         $prefixLength       = mb_strlen($this->errorPrefix);
 
         // PDO Exception likes to place SQLState before the message
@@ -105,8 +105,8 @@ class UserErrorExceptionListener
             }
 
             // PostgreSQL
-            if ('P0001' === $event->getException()->getCode() && preg_match('#^SQLSTATE\[P0001\]: Raise exception: \d+ ERROR:  (.+)#', $exceptionMessesage, $messageMatch)) {
-                $exceptionMessesage = $messageMatch[1];
+            if ('P0001' === $event->getException()->getCode() && preg_match('#^SQLSTATE\[P0001\]: Raise exception: \d+ ERROR:  (.+)#', $exceptionMessage, $messageMatch)) {
+                $exceptionMessage = $messageMatch[1];
             }
             // MySQL
             /*if ($event->getException()->getCode() === 'HT000') {
@@ -120,9 +120,9 @@ class UserErrorExceptionListener
             // @codeCoverageIgnoreEnd
         }
 
-        if (mb_substr($exceptionMessesage, 0, $prefixLength) === $this->errorPrefix) {
-            $exceptionMessesage = mb_substr($exceptionMessesage, $prefixLength);
-            $messageMatch       = $this->_parseMessage($exceptionMessesage);
+        if (mb_substr($exceptionMessage, 0, $prefixLength) === $this->errorPrefix) {
+            $exceptionMessage = mb_substr($exceptionMessage, $prefixLength);
+            $messageMatch     = $this->parseMessage($exceptionMessage);
 
             $event->setException(new \Exception($this->translator->trans($messageMatch['message'], $messageMatch['params']), 0, $event->getException()));
         }
@@ -132,9 +132,9 @@ class UserErrorExceptionListener
      * Parse the user-error message and return the message and parameters.
      *
      * @param string $inputMessage
-     * @return Array with 'message' containing the actual message and 'params' containing the parameters
+     * @return array with 'message' containing the actual message and 'params' containing the parameters
      */
-    protected function _parseMessage($inputMessage)
+    protected function parseMessage($inputMessage)
     {
         $parsedParams = array();
 
