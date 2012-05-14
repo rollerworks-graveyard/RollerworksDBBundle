@@ -92,7 +92,7 @@ class UserErrorExceptionListener
         }
 
         $exceptionMessage = $event->getException()->getMessage();
-        $prefixLength       = mb_strlen($this->errorPrefix);
+        $prefixLength     = mb_strlen($this->errorPrefix);
 
         // PDO Exception likes to place SQLState before the message
         // And do some other stuff...
@@ -109,8 +109,8 @@ class UserErrorExceptionListener
                 $exceptionMessage = $messageMatch[1];
             }
             // MySQL
-            /*if ($event->getException()->getCode() === 'HT000') {
-                $sExceptionMsg = $aMessage[1];
+            /*if ('HT000' === $event->getException()->getCode()) {
+                $exceptionMessage = $messageMatch[1];
             }
             */
             // @codeCoverageIgnoreStart
@@ -194,8 +194,7 @@ class UserErrorExceptionListener
             }
 
             return array('message' => $errorMatch[1], 'params' => $parsedParams);
-        }
-        else {
+        } else {
             return array('message' => $inputMessage, 'params' => array());
         }
     }
