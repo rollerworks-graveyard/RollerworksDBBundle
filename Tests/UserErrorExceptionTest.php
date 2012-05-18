@@ -11,7 +11,7 @@
 
 namespace Rollerworks\DBBundle\Tests;
 
-use Rollerworks\DBBundle\EventListener\UserErrorExceptionListener;
+use Rollerworks\Bundle\DBBundle\EventListener\UserErrorExceptionListener;
 
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpKernel\EventListener\ExceptionListener;

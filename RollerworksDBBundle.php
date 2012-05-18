@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Rollerworks\DBBundle;
+namespace Rollerworks\Bundle\DBBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
