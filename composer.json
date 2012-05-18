@@ -1,0 +1,25 @@
+{
+    "name":        "rollerworks/db-bundle",
+    "description": "Doctrine DBAL Helper Bundle. Providing extra functionality for the DBAL",
+    "keywords":    ["doctrine", "symfony", "dbal", "bundle"],
+    "type":        "symfony-bundle",
+    "license":     "MIT",
+    "authors":     [
+        {
+            "name": "Sebastiaan Stok",
+            "email": "s.stok@rollercapes.net"
+        }
+    ],
+    "require":    {
+        "php": ">=5.3.3",
+        "symfony/framework-bundle": "2.*",
+				"doctrine/dbal": "2.2.*",
+    },
+
+    "autoload":  {
+        "psr-0":{
+            "Rollerworks\\Bundle\\DBBundle": ""
+        }
+    },
+    "target-dir": "Rollerworks/Bundle/DBBundle"
+}
