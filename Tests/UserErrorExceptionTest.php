@@ -21,7 +21,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Translation\Translator;
 use Symfony\Component\Translation\MessageSelector;
 use Symfony\Component\Translation\Loader\ArrayLoader;
-use Symfony\Tests\Component\HttpKernel\Logger;
 use Doctrine\DBAL\Connection;
 
 class UserErrorExceptionTest extends \PHPUnit_Framework_TestCase
