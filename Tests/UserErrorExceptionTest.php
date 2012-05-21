@@ -98,8 +98,7 @@ class UserErrorExceptionTest extends \PHPUnit_Framework_TestCase
 
         try	{
             $kernel2->handle($request);
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             $l->onKernelException(new GetResponseForExceptionEvent($kernel2, $request, 'foo', $e));
 
             $this->assertSame('bar', $e->getMessage());
@@ -107,8 +106,7 @@ class UserErrorExceptionTest extends \PHPUnit_Framework_TestCase
 
         try	{
             $kernel3->handle($request);
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             $event = new GetResponseForExceptionEvent($kernel3, $request, 'foo', $e);
 
             $l->onKernelException($event);
@@ -118,8 +116,7 @@ class UserErrorExceptionTest extends \PHPUnit_Framework_TestCase
 
         try	{
             $kernel4->handle($request);
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             $sExceptionMessage = $e->getMessage();
 
             $event = new GetResponseForExceptionEvent($kernel3, $request, 'foo', $e);
