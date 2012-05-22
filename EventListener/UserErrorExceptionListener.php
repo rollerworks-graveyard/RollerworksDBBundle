@@ -43,7 +43,7 @@ class UserErrorExceptionListener
     /**
      * Translator instance
      *
-     * @var \Symfony\Component\Translation\TranslatorInterface
+     * @var TranslatorInterface
      */
     protected $translator;
 
@@ -131,7 +131,8 @@ class UserErrorExceptionListener
      * Parse the user-error message and return the message and parameters.
      *
      * @param string $inputMessage
-     * @return array with 'message' containing the actual message and 'params' containing the parameters
+     *
+     * @return array Array with 'message' containing the actual message and 'params' containing the parameters
      */
     protected function parseMessage($inputMessage)
     {
