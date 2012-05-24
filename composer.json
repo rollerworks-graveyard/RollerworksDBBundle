@@ -13,7 +13,7 @@
     "require":    {
         "php": ">=5.3.3",
         "symfony/framework-bundle": "2.*,<2.0.x-dev",
-        "doctrine/dbal": "2.2.*"
+        "doctrine/dbal": ">=2.1,<2.3-dev"
     },
 
     "autoload":  {

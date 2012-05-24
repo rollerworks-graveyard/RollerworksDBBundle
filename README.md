@@ -1,5 +1,5 @@
-﻿[RollerworksDBBundle]
-=====================
+﻿RollerworksDBBundle
+===================
 
 ### UserErrorExceptionListener
 
@@ -62,7 +62,7 @@ file of your Symfony Standard Distribution:
 
 ```ini
 [RollerworksDBBundle]
-    git=http://github.com/rollerscapes/RollerworksDBBundle.git
+    git=http://github.com/rollerworks/RollerworksDBBundle.git
     target=/bundles/Rollerworks/Bundle/DBBundle
 ```
 
@@ -114,7 +114,7 @@ $ mkdir -pv vendor/bundles/Rollerworks/Bundle
 Next, add the necessary submodule:
 
 ``` bash
-$ git submodule add git://github.com/rollerscapes/RollerworksDBBundle.git vendor/bundles/Rollerworks/Bundle/DBBundle
+$ git submodule add git://github.com/rollerworks/RollerworksDBBundle.git vendor/bundles/Rollerworks/Bundle/DBBundle
 ```
 
 ### Step2: Configure the autoloader
