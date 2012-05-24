@@ -92,11 +92,11 @@ class UserErrorExceptionTest extends \PHPUnit_Framework_TestCase
 
         $translator = new Translator('en', new MessageSelector());
         $translator->addLoader('array', new ArrayLoader());
-        $translator->addResource('array', array((string)trim(trim($inputMessage), '"') => $expectedMessage), 'en');
+        $translator->addResource('array', array((string) trim(trim($inputMessage), '"') => $expectedMessage), 'en');
 
         $l = new UserErrorExceptionListener($translator);
 
-        try	{
+        try {
             $kernel2->handle($request);
         } catch (\Exception $e) {
             $l->onKernelException(new GetResponseForExceptionEvent($kernel2, $request, 'foo', $e));
@@ -104,7 +104,7 @@ class UserErrorExceptionTest extends \PHPUnit_Framework_TestCase
             $this->assertSame('bar', $e->getMessage());
         }
 
-        try	{
+        try {
             $kernel3->handle($request);
         } catch (\Exception $e) {
             $event = new GetResponseForExceptionEvent($kernel3, $request, 'foo', $e);
@@ -114,7 +114,7 @@ class UserErrorExceptionTest extends \PHPUnit_Framework_TestCase
             $this->assertSame($expectedMessage, $event->getException()->getMessage());
         }
 
-        try	{
+        try {
             $kernel4->handle($request);
         } catch (\Exception $e) {
             $sExceptionMessage = $e->getMessage();

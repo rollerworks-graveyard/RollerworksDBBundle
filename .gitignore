@@ -17,12 +17,11 @@ Thumbs.db
 nbproject
 *.sublime-project
 *.sublime-workspace
-
-# Folders to ignore
-/vendor/
 .idea
-
 phpunit.xml
+
+# Composer
 composer.lock
 composer.phar
 autoload.php
+/vendor/
