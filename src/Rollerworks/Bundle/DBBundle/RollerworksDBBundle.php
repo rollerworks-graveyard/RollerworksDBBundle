@@ -1,7 +1,7 @@
 <?php
 
-/**
- * This file is part of the RollerworksDBBundle.
+/*
+ * This file is part of the RollerworksDBBundle package.
  *
  * (c) Sebastiaan Stok <s.stok@rollerscapes.net>
  *

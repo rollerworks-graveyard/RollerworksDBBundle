@@ -5,7 +5,8 @@ $finder = Symfony\CS\Finder\DefaultFinder::create()
     ->ignoreDotFiles(true)
     ->ignoreVCS(true)
     ->exclude('vendor')
-    ->in(__DIR__)
+    ->in(__DIR__ . '/src')
+    ->in(__DIR__ . '/tests')
 ;
 
 return Symfony\CS\Config\Config::create()

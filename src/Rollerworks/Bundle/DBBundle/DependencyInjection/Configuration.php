@@ -1,7 +1,7 @@
 <?php
 
-/**
- * This file is part of the RollerworksDBBundle.
+/*
+ * This file is part of the RollerworksDBBundle package.
  *
  * (c) Sebastiaan Stok <s.stok@rollerscapes.net>
  *
@@ -30,7 +30,7 @@ class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder()
     {
         $treeBuilder = new TreeBuilder();
-        $rootNode    = $treeBuilder->root('rollerworks_db');
+        $rootNode = $treeBuilder->root('rollerworks_db');
 
         $rootNode
             ->children()
@@ -38,13 +38,11 @@ class Configuration implements ConfigurationInterface
                     ->addDefaultsIfNotSet()
                     ->fixXmlConfig('check_class_in')
                     ->children()
-
                         ->arrayNode('check_class_in')
                             ->addDefaultsIfNotSet()
                             ->defaultValue(array('PDOException', 'Doctrine\DBAL\Driver\OCI8\OCI8Exception'))
                             ->prototype('scalar')->end()
                         ->end()
-
                         ->scalarNode('check_prefix')->defaultValue('app-exception: ')->end()
                     ->end()
                 ->end()

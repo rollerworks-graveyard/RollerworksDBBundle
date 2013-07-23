@@ -1,7 +1,7 @@
 <?php
 
-/**
- * This file is part of the RollerworksDBBundle.
+/*
+ * This file is part of the RollerworksDBBundle package.
  *
  * (c) Sebastiaan Stok <s.stok@rollerscapes.net>
  *
@@ -18,7 +18,7 @@ use Symfony\Component\Translation\TranslatorInterface;
  * UserErrorExceptionListener.
  *
  * An user-error is an exception/error thrown by an DB used-defined function,
- * and is intended as a 'last check', so don't use this to validate basic user-input.
+ * and is intended as a 'last check', so don't use it to validate basic user-input.
  *
  * An user-error is constructed as.
  * Prefix: "translation-key"|param1:value|param2:value2

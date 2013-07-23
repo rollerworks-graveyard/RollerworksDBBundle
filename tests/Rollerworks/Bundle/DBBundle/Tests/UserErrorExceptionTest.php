@@ -1,6 +1,6 @@
 <?php
 
-/**
+/*
  * This file is part of the RollerworksDBBundle.
  *
  * (c) Sebastiaan Stok <s.stok@rollerscapes.net>
