@@ -5,7 +5,7 @@
 
 This listener listens to DBAL related Exceptions and looks for an so-called user-error.
 
-** Currently only PostgreSQL is supported. **
+**Currently only PostgreSQL is supported.**
 
 An user-error is an exception/error thrown by an DB used-defined function,
 and can be seen as a system exception, so its not intended for validating basic user-input.
